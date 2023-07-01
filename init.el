@@ -8,13 +8,29 @@
                      gcs-done)))
 (load-theme 'wombat)
 
+;; Set some UI elements and settings
+(menu-bar-mode -1)                         ; disable menu bar
+(tool-bar-mode -1)                         ; disable tool bar
+(setq visible-bell t)                      ; set visible bell (disable audio bell)
+(set-fringe-mode '(10 . 10))               ; add some pixels to left and right edge of screen
+(setq history-length 25)                   ; Turn on minibuffer history
+(savehist-mode 1)
+(save-place-mode 1)                        ; Turn on save place mode for navigating in place to reopened file
+
+;; Set a location for customization variables so they don't get set here
+(setq custom-file (locate-user-emacs-file "custom-vars.el"))
+(load custom-file 'noerror 'nomessage)
+
+;; Update files in buffers when they've been changed outside of Emacs
+(global-auto-revert-mode 1)
+(setq global-auto-revert-non-file-buffers t)
+
+;; Use minibuffer area over pop up UI dialogs for some Emacs prompts
+;(setq use-dialog-box nil)
+
 ;; Enable windmove `shift + <arrow>` keybindings
 (when (fboundp 'windmove-default-keybindings)
   (windmove-default-keybindings))
-
-;; Set some UI elements
-(tool-bar-mode -1)     ; disable tool-bar
-(setq visible-bell t)  ; set visible bell (disable audio bell)
 
 ;; Initialize package sources
 (require 'package)
@@ -29,7 +45,6 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
-(require 'command-log-mode)
 (use-package command-log-mode)  ; log commands into a buffer: `M-x clm/open-command-log-buffer`
 
 (use-package ivy
@@ -49,10 +64,6 @@
          ("C-d" . ivy-reverse-i-search-kill))
   :init (ivy-mode 1))
 
-(use-package ivy-rich
-  :init
-  (ivy-rich-mode 1))
-
 (use-package counsel
   :bind (("M-x" . counsel-M-x)
 	 ("C-x b" . counsel-switch-buffer)
@@ -63,13 +74,11 @@
   :config
   (setq ivy-initial-inputs-alist nil))  ; don't start searches with `^`
 
+(use-package ivy-rich
+  :init
+  (ivy-rich-mode 1))
+
 (use-package all-the-icons)  ; Run at new config: M-x all-the-icons-install-fonts
-
-(use-package doom-modeline
-  :ensure t
-  :init (doom-modeline-mode 1))
-
-(use-package doom-themes)
 
 (use-package which-key
   :init (which-key-mode)
@@ -77,7 +86,7 @@
   :config
   (setq which-key-idle-delay 0.5))
 
-(require 'multiple-cursors)
+(use-package multiple-cursors)
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
@@ -97,48 +106,25 @@
   :config
   (setq aw-dispatch-always t))
 
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1))
+
+(use-package doom-themes)
+
 ;; Ripgrep
 (use-package wgrep)
 (use-package transient)
 (use-package rg
   :bind ("C-c r" . rg))
 
-(use-package magit
+(use-package emacsql-sqlite-builtin)
+
+(use-package magit)
   :custom
   ;(magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
+(use-package forge)
 ;; Turn on recent file mode
 (recentf-mode 1)
 (global-set-key (kbd "C-c C-f") 'recentf-open-files)
-
-;; Turn on minibuffer history
-(setq history-length 25)
-(savehist-mode 1)
-
-;; Turn on save place mode for navigating in place to reopened file
-(save-place-mode 1)
-
-;; Set a location for customization variables so they don't get set here
-(setq custom-file (locate-user-emacs-file "custom-vars.el"))
-(load custom-file 'noerror 'nomessage)
-
-;; Update files in buffers when they've been changed outside of Emacs
-(global-auto-revert-mode 1)
-(setq global-auto-revert-non-file-buffers t)
-
-;; Use minibuffer area over pop up UI dialogs for some Emacs prompts
-;(setq use-dialog-box nil)
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(magit which-key use-package rg multiple-cursors ivy-rich helpful doom-themes doom-modeline counsel command-log-mode all-the-icons ace-window)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
