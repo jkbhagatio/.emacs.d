@@ -1,0 +1,22 @@
+[user]
+	name = Jai
+	email = jkbhagatio@gmail.com
+[winUpdater]
+	recentlySeenVersion = 2.31.1.windows.1
+[diff]
+	tool = vscode
+[difftool "vscode"]
+	cmd = code --wait --diff $LOCAL $REMOTE
+[merge]
+	tool = vscode
+[mergetool "vscode"]
+	cmd = code --wait $MERGED
+[core]
+	autocrlf = true
+	editor = nano
+[credential "helperselector"]
+	selected = manager-core
+[alias]
+	ac = !git add -A && git commit -m
+[github]
+	user = jkbhagatio
