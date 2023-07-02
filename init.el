@@ -16,6 +16,7 @@
 (setq history-length 25)                   ; Turn on minibuffer history
 (savehist-mode 1)
 (save-place-mode 1)                        ; Turn on save place mode for navigating in place to reopened file
+(column-number-mode 1)
 
 ;; Set a location for customization variables so they don't get set here
 (setq custom-file (locate-user-emacs-file "custom-vars.el"))
@@ -27,6 +28,10 @@
 
 ;; Use minibuffer area over pop up UI dialogs for some Emacs prompts
 ;(setq use-dialog-box nil)
+
+;; Turn on recent file mode
+(recentf-mode 1)
+(global-set-key (kbd "C-c C-f") 'recentf-open-files)
 
 ;; Enable windmove `shift + <arrow>` keybindings
 (when (fboundp 'windmove-default-keybindings)
@@ -91,6 +96,33 @@
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
+;; Dired settings
+(require 'dired-x)  ; allows for ext finding
+(setq delete-by-moving-to-trash t)
+(setq dired-kill-when-opening-new-dired-buffer t)
+(setq dired-recursive-copies 'always)
+(setq dired-recursive-deletes 'always)
+(setq dired-listing-switches  "-agho --group-directories-first --time-style=long-iso")
+(setq dired-dwim-target t)
+(use-package all-the-icons-dired
+  :hook (dired-mode . all-the-icons-dired-mode))
+(use-package dired-hide-dotfiles ; hide dot files hook in dired
+  :hook (dired-mode . dired-hide-dotfiles-mode))
+(define-key dired-mode-map (kbd "z") 'dired-hide-dotfiles-mode)
+;; Initialize without hiding anything
+(setq dired-hode-dotfiles-mode -1)
+(setq dired-hide-details-mode -1)
+;; (use-package dired-open
+;;   :config
+;;   (setq dired-open-extensions '(("png" . "feh")
+;;                                 ("mkv" . "mpv"))))
+;; (use-package dirvish)
+;; (dirvish-override-dired-mode)
+;; (dirvish-override-dired-jump)
+;; (setq dirvish-enable-preview t)
+;; (require 'dirvish-minibuffer-preview)
+;; (dirvish-minibuf-preview-mode)
+
 (use-package helpful
   :custom
   (counsel-describe-function-function #'helpful-callable)
@@ -121,10 +153,8 @@
 (use-package emacsql-sqlite-builtin)
 
 (use-package magit)
-  :custom
+  ;:custom
   ;(magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+(setq magit-auto-revert-mode t)
 
 (use-package forge)
-;; Turn on recent file mode
-(recentf-mode 1)
-(global-set-key (kbd "C-c C-f") 'recentf-open-files)
