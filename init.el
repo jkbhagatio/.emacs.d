@@ -46,15 +46,12 @@
                          ("org" . "https://orgmode.org/elpa/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
 (package-initialize)
-(unless package-archive-contents  
+(unless package-archive-contents
   (package-refresh-contents))
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 (require 'use-package)
 (setq use-package-always-ensure t)
-
-(use-package command-log-mode)  ; log commands into a buffer: `M-x clm/open-command-log-buffer`
-(setq global-command-log-mode t)
 
 (use-package ivy
   :diminish
@@ -102,35 +99,77 @@
 (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
 ;; Dired settings
-(require 'dired-x)  ; allows for ext finding
 (setq delete-by-moving-to-trash t)
 (setq dired-kill-when-opening-new-dired-buffer t)
 (setq dired-recursive-copies 'always)
 (setq dired-recursive-deletes 'always)
 (setq dired-listing-switches  "-agho --group-directories-first --time-style=long-iso")
 (setq dired-dwim-target t)
+(define-key dired-mode-map (kbd "z") 'dired-hide-dotfiles-mode)
+(define-key dired-mode-map (kbd "b") 'dired-hide-details-mode)
+(define-key dired-mode-map (kbd "% C-g") 'dired-do-query-replace-regexp)
+(setq dired-hode-dotfiles-mode -1)
+(setq dired-hide-details-mode -1)
+
 (use-package dired-hacks-utils)
-(use-package dired-hide-dotfiles) ; hide dot files hook in dired
-;; (use-package dired-open
-;;   :config
-;;   (setq dired-open-extensions '(("png" . "feh")
-;;                                 ("mkv" . "mpv"))))
+(require 'dired-x)              ; allows for ext finding
+(use-package dired-hide-dotfiles)  ; hide dot files hook in dired
+(use-package dired-open
+   :config
+   (setq dired-open-extensions '(("txt" . "notepad")
+                                 ("mkv" . "mpv"))))
+(use-package dired-filter)
+(use-package dired-subtree)
+(define-key dired-mode-map (kbd "i") 'dired-subtree-cycle)
+(use-package dired-rainbow
+  :config
+  (progn
+    (dired-rainbow-define-chmod executable-unix "#38c172" "-.*x.*")
+    (dired-rainbow-define-chmod directory "#6cb2eb" "d.*")
+    (dired-rainbow-define markupdown "#eb5286"
+      ("css" "less" "sass" "scss" "htm" "html" "jhtm" "mht" "eml" "xhtml" "xml" "xsd" "xsl"
+      "yml" "yaml" "json" "bib" "msg" "pgn" "rss" "org" "etx" "info" "markdown" "md" "mkd" "tex"))
+    (dired-rainbow-define office "#9561e2" ("docm" "doc" "docx" "ppt" "pptx" "xls" "xlsx" "csv"))
+    (dired-rainbow-define pdf "#ffed4a" ("pdf" "djvu" "epub"))
+    (dired-rainbow-define database "#6574cd" ("accdb" "db" "mdb" "sqlite"))
+    (dired-rainbow-define media "#de751f"
+      ("mp3" "mp4" "MP3" "MP4" "avi" "mpeg" "mpg" "flv" "ogg" "mov" "mid" "midi" "wav" "flac"))
+    (dired-rainbow-define image "#f66d9b"
+      ("tiff" "tif" "cdr" "gif" "ico" "jpeg" "jpg" "png" "psd" "eps" "svg"))
+    (dired-rainbow-define log "#c17d11" ("log"))
+    (dired-rainbow-define shell "#f6993f" ("awk" "bash" "bat" "sed" "sh" "zsh" "vim" "ps" "ps1"))
+    (dired-rainbow-define code "#38c172"
+      ("py" "ipynb" "rb" "msql" "mysql" "pgsql" "sql" "r" "clj" "cljs" "scala" "js" "cjs" "m"
+       "cl" "lisp" "el" "c" "h" "c++" "h++" "hpp" "hxx" "cc" "cs" "cp" "cpp" "go" "f" "for" "ftn"
+       "f90" "f95" "f03" "f08" "s" "rs" "hi" "hs" "pyc" "java"))
+    (dired-rainbow-define executable "#8cc4ff" ("exe" "msi"))
+    (dired-rainbow-define compressed "#51d88a"
+      ("7z" "zip" "bz2" "tgz" "txz" "gz" "xz" "z" "Z" "jar" "war" "ear" "rar" "sar" "xpi" "apk" "xz"
+       "tar"))
+    (dired-rainbow-define packaged "#faad63"
+      ("deb" "rpm" "apk" "jad" "jar" "cab" "pak" "pk3" "vdf" "vpk" "bsp"))
+    (dired-rainbow-define encrypted "#ffed4a"
+      ("gpg" "pgp" "asc" "bfe" "enc" "signature" "sig" "p12" "pem"))
+    (dired-rainbow-define partition "#e3342f"
+      ("dmg" "iso" "bin" "nrg" "qcow" "toast" "vcd" "vmdk" "bak"))
+    (dired-rainbow-define vc "#0074d9" ("git" "gitignore" "gitattributes" "gitmodules"))
+    (dired-rainbow-define bin-data "#6cb2eb" ("bin" "dat" "data" "hdf" "hdf5"))))
+
 (use-package pdf-tools)
 (use-package dirvish
   :init
   (dirvish-override-dired-mode)
   :custom
   (dirvish-quick-access-entries ; It's a custom option, `setq' won't work
-   '(("h" "/c/Users/jai"                   "home")
-     ("g" "/d/google_drive"                "g_drive")))
+   '(("h" "/Users/jai"                   "home")
+     ("g" "/google_drive"                "g_drive")))
   :config
   ;; (dirvish-peek-mode) ; Preview files in minibuffer
   ;; (dirvish-side-follow-mode) ; similar to `treemacs-follow-mode'
   (setq dirvish-mode-line-format
         '(:left (sort symlink) :right (omit yank index file-size file-time)))
   (setq dirvish-attributes
-	'(file-time file-size collapse subtree-state vc-state git-msg))
-       ;'(vscode-icon file-time file-size collapse subtree-state vc-state git-msg))
+        '(vscode-icon file-time file-size collapse subtree-state vc-state git-msg))
   (setq delete-by-moving-to-trash t)
   (setq dired-listing-switches
         "-l --almost-all --human-readable --group-directories-first --no-group")
@@ -142,11 +181,20 @@
 ;; (require 'dirvish-minibuffer-preview)
 ;; (dirvish-minibuf-preview-mode)
 ;; Initialize without hiding anything
-(setq dired-hode-dotfiles-mode -1)
-(setq dired-hide-details-mode -1)
-(define-key dired-mode-map (kbd "z") 'dired-hide-dotfiles-mode)
-(define-key dired-mode-map (kbd "b") 'dired-hide-details-mode)
-(define-key dired-mode-map (kbd "% C-g") 'dired-do-query-replace-regexp)
+
+(defvar my/toggle-drive-state 0 "State variable for drive toggle.")
+(defun my/toggle-drive ()
+  "Toggle the default drive between C:/ and D:/."
+  (interactive)
+  (if (= my/toggle-drive-state 0)
+      (progn
+        (setq default-directory "C:/Users/jai")
+        (setq my/toggle-drive-state 1))
+    (progn
+      (setq default-directory "D:/")
+      (setq my/toggle-drive-state 0)))
+  (message "%s" default-directory))
+(global-set-key (kbd "C-c D") 'my/toggle-default-directory)
 
 (use-package helpful
   :custom
@@ -183,3 +231,7 @@
 (setq magit-auto-revert-mode t)
 
 (use-package forge)
+
+(use-package command-log-mode)  ; log commands into a buffer: `M-x clm/open-command-log-buffer`
+(clm/open-command-log-buffer)
+(setq global-command-log-mode t)

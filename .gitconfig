@@ -1,8 +1,6 @@
 [user]
 	name = Jai
 	email = jkbhagatio@gmail.com
-[winUpdater]
-	recentlySeenVersion = 2.31.1.windows.1
 [diff]
 	tool = vscode
 [difftool "vscode"]
